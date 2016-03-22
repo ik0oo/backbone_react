@@ -7,6 +7,7 @@ import Backbone from 'backbone';
 //files
 import Add from './add';
 import Profile from '../models/profile';
+import Bill from './bill';
 
 export default class Create extends React.Component {
 	constructor () {
@@ -18,9 +19,10 @@ export default class Create extends React.Component {
 		const self = this;
 
 		this.model.on('save', () => {
-			self.props.collection.add(self.model.toJSON());
+			self.model.set('active', true);
+			const newModel = self.props.collection.add(self.model.toJSON());
 			self.model.clear();
-			self.forceUpdate.bind(self, null)
+			self.props.router.navigate('#profile/' + newModel.cid, {trigger: true, replace: true});
 		});
 	}
 
@@ -30,9 +32,16 @@ export default class Create extends React.Component {
 
 	render () {
 		return (
-			<div class="col-xs-12">
-				<Add collection={this.props.collection} model={this.model}/>
-			</div>
+
+			<section class="panel">
+				<header class="panel-heading">
+					Добавить профиль
+				</header>
+				<div class="panel-body">
+					<Add collection={this.props.collection} model={this.model}/>
+					<Bill collection={this.props.collection} model={this.model}/>
+				</div>
+			</section>
 		);
 	}
 }

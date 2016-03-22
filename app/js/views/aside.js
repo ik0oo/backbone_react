@@ -8,8 +8,20 @@ import Backbone from 'backbone';
 import Profile from './profile';
 
 export default class Aside extends React.Component {
+	componentWillMount () {
+		const collection = this.props.collection;
+
+		collection.on('changeActive', m => {
+            _.each(collection.models, model => {
+                model.set('active', false, {silent: true});
+            });
+
+            m ? m.set('active', true) : collection.trigger('change');
+		});
+	}
+
 	componentDidMount () {
-		this.props.collection.on('add', this.forceUpdate.bind(this, null));
+		this.props.collection.on('add change remove', this.forceUpdate.bind(this, null));
 	}
 
 	componentWillUnMount () {
@@ -24,14 +36,19 @@ export default class Aside extends React.Component {
 		});
 
 		return (
-			<div class="col-xs-4">
-				<div class="row">
-					<div class="col-xs-12">
-						<h1>Пользователи</h1>
-					</div>
-					{profiles}
-				</div>
-			</div>
+
+            <aside class="<aside left-side sidebar-offcanvas">
+                <section class="sidebar">
+                    <ul class="sidebar-menu">
+						{profiles}
+                    </ul>
+
+                    <a href="#add" class="btn btn-primary btn-addon btn-sm">
+                        <i class="fa fa-plus"></i>
+                        Добавить
+                    </a>
+                </section>
+            </aside>
 		);
 	}
 }

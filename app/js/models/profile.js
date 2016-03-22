@@ -6,11 +6,11 @@ import Backbone from 'backbone';
 //files
 import Bills from '../collections/bills';
 
-const valute = [
-	{name: 'rub', value: 0},
-	{name: 'usd', value: 0},
-	{name: 'eur', value: 0}
-];
+//const valute = [
+//	{name: 'rub', value: 0},
+//	{name: 'usd', value: 0},
+//	{name: 'eur', value: 0}
+//];
 
 export default class Profile extends Backbone.Model {
 	defaults () {
@@ -19,7 +19,7 @@ export default class Profile extends Backbone.Model {
 			name: '',
 			email: '',
 			active: false,
-			bills: new Bills(valute)
+			bills: new Bills
 		}
 	}
 

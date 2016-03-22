@@ -30,7 +30,9 @@ gulp.task('webpack', function () {
 gulp.task('styles', function () {
 	return gulp.src('./app/styles/app.styl')
 		.pipe($.sourcemaps.init())
-		.pipe($.stylus())
+		.pipe($.stylus({
+			'include css': true
+		}))
 		.pipe($.concat('style.css'))
 		.pipe($.autoprefixer({
 			browsers: ['last 10 versions'],

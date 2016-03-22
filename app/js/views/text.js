@@ -5,7 +5,6 @@ import React from 'react';
 export default class Text extends React.Component {
 	constructor () {
 		super();
-		this.firstValidate = false;
 	}
 
 	componentDidMount () {
@@ -23,29 +22,17 @@ export default class Text extends React.Component {
 		this.props.model.set(val);
 	}
 
-	validate (value) {
-		if (!this.firstValidate) {
-			this.firstValidate = true;
-			return '';
-		}
-
-		return $.trim(value) === '' ? 'Поле не заполнено' : '';
-	}
-
 	render () {
 
 		const valueLink = {
 			value: this.props.model.get(this.props.property),
 			requestChange: this.handelChange.bind(this)
-		}
-
-		const validate = this.validate(this.props.model.get(this.props.property));
+		};
 
 		return (
 			<div>
 				<label>{this.props.name}</label> <br/>
-				<input type="text" valueLink={valueLink}/>
-				<span>{validate}</span>
+				<input class="form-control" type={this.props.type} valueLink={valueLink} required/>
 			</div>
 		);
 	}
