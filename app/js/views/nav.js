@@ -7,6 +7,8 @@ import Backbone from 'backbone';
 //files
 import Add from './add';
 import Profile from '../models/profile';
+import Valute from './valute';
+import base from '../models/base';
 
 export default class Create extends React.Component {
     constructor () {
@@ -31,9 +33,25 @@ export default class Create extends React.Component {
     }
 
     remove () {
+        _.each(this.props.collection.models, model => {
+            if (model.get('bills').length) {
+                _.each(model.get('bills').models, m => {
+                    if (m) {
+                        _.each(m.attributes, (attr, iterator) => {
+                            let baseVal = base.get('_base_' + iterator);
+                            let newBaseVal = Number(baseVal) + Number(attr);
+
+                            base.set('_base_' + iterator, newBaseVal);
+                            base.set(iterator, newBaseVal);
+                        });
+                    }
+                });
+            }
+        });
+
         this.props.collection.remove(this.props.page);
         this.close();
-        this.props.router.navigate('/', {trigger: true, replace: true});
+        this.props.router.navigate('#profile/c2', {trigger: true, replace: true});
     }
 
     render () {
@@ -42,7 +60,16 @@ export default class Create extends React.Component {
                 <h2>{this.props.name}</h2>
                 <p>{this.props.email}</p>
 
+
+                <div className="row">
+                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'rub'} />
+                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'usd'} />
+                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'eur'} />
+                </div>
+
+
                 <a href={'#profile/' + this.props.page + '/edit'} class="btn btn-info" >Редактировать</a>
+                <a href={'#profile/' + this.props.page + '/send'} class="btn btn-info" >Отправить</a>
                 <a  class="btn btn-default" onClick={this.open.bind(this)}>Удалить</a>
 
 

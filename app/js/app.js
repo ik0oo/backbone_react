@@ -25,11 +25,14 @@ test = _.map(test, item => {
 
 const profiles = new Profiles(test);
 
+window.prof = profiles;
+
 class Router extends Backbone.Router {
 	routes () {
 		return {
 			'profile/c:page': 'profile',
 			'profile/c:page/edit': 'edit',
+			'profile/c:page/send': 'send',
 			'add': 'add'
 		}
 	}
@@ -43,6 +46,13 @@ class Router extends Backbone.Router {
 
 	edit (page) {
 		this.current = 'edit';
+		this.page = 'c' + page;
+
+		profiles.trigger('changeActive', profiles.get(this.page));
+	}
+
+	send (page) {
+		this.current = 'send';
 		this.page = 'c' + page;
 
 		profiles.trigger('changeActive', profiles.get(this.page));

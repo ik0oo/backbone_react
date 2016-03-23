@@ -18,15 +18,14 @@ export default class Text extends React.Component {
     handelChange (newValue) {
         const val = {};
         val[this.props.property] = newValue;
-
         this.props.model.set(val);
 
         let base = this.props.base;
-        base.set(this.props.property, this.base - newValue);
+        let base_const = base.get('_base_' + this.props.property);
+        base.set(this.props.property, base_const - newValue);
     }
 
     render () {
-        if (!this.base) this.base = this.props.base.get(this.props.property);
 
         const valueLink = {
             value: this.props.model.get(this.props.property),

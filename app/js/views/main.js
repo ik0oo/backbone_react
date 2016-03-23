@@ -8,7 +8,9 @@ import Backbone from 'backbone';
 //files
 import Create from './create';
 import Edit from './edit';
+import Send from './send';
 import Nav from './nav';
+import base from '../models/base';
 
 export default class Main extends React.Component {
 	constructor () {
@@ -24,6 +26,14 @@ export default class Main extends React.Component {
 	}
 
 	render () {
+		//TODO решить что-то с сайлентовым обновление base model
+		_.each(base.attributes, (attr, iterator, array) => {
+			if (!~iterator.indexOf('_')) {
+				attr != array['_base_' + iterator] && (base.set(iterator, array['_base_' + iterator], {silent: true}));
+			}
+		});
+
+		const model = this.props.collection.get(this.props.router.page);
 
 		if (this.props.router.current == 'edit') {
 			return (
@@ -31,7 +41,21 @@ export default class Main extends React.Component {
 					<section class="content">
 						<div class="row">
 							<div class="col-xs-6">
-								<Edit collection={this.props.collection} model={this.props.collection.get(this.props.router.page)} router={this.props.router}/>
+								<Edit collection={this.props.collection} model={model} router={this.props.router}/>
+							</div>
+						</div>
+					</section>
+				</aside>
+			);
+		}
+
+		if (this.props.router.current == 'send') {
+			return (
+				<aside class="right-side">
+					<section class="content">
+						<div class="row">
+							<div class="col-xs-6">
+								<Send collection={this.props.collection} model={model} router={this.props.router}/>
 							</div>
 						</div>
 					</section>
@@ -40,8 +64,6 @@ export default class Main extends React.Component {
 		}
 
 		if (this.props.router.current == 'id') {
-			const model = this.props.collection.get(this.props.router.page);
-
 			return (
 				<aside class="right-side">
 					<section class="content">
@@ -67,12 +89,6 @@ export default class Main extends React.Component {
 			);
 		}
 
-		return (
-			<aside class="right-side">
-				<section class="content">
-
-				</section>
-			</aside>
-		);
+		return false;
 	}
 }

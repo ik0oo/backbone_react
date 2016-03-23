@@ -6,16 +6,12 @@ import Backbone from 'backbone';
 export default class Base extends Backbone.Model {
     defaults () {
         return {
-            //bill: {
-            //    rub: 0,
-            //    usd: 0,
-            //    eur: 0
-            //},
-            //order: {
-                rub: 1000,
-                usd: 1000,
-                eur: 1000
-            //}
+            rub: 1000,
+            usd: 1000,
+            eur: 1000,
+            _base_rub: 1000,
+            _base_usd: 1000,
+            _base_eur: 1000
         }
     }
 
@@ -26,5 +22,6 @@ export default class Base extends Backbone.Model {
 }
 
 const base = new Base;
+window.base = base;
 
 export default base;

@@ -6,7 +6,7 @@ import base from '../models/base';
 
 class Item extends React.Component {
     componentDidMount () {
-        this.props.model.on('change:' + this.props.valute, this.forceUpdate.bind(this, null));
+        this.props.model.on('prev change:' + this.props.valute, this.forceUpdate.bind(this, null));
     }
 
     componentWillUnmount () {

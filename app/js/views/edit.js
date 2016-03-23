@@ -19,8 +19,6 @@ export default class Create extends React.Component {
 
         this.model.on('save', () => {
             const model = self.props.collection.get(this.props.model.cid);
-            //self.model.set('active', true);
-            //self.props.collection.trigger('changeActive', self.model);
 
             model.set(self.model.toJSON());
             self.props.router.navigate('#profile/' + model.cid, {trigger: true, replace: true});
@@ -29,6 +27,10 @@ export default class Create extends React.Component {
 
     componentWillUnmount () {
         this.model.off(null, null, this);
+    }
+
+    save () {
+        this.model.trigger('save');
     }
 
     render () {
@@ -41,6 +43,15 @@ export default class Create extends React.Component {
                 </header>
                 <div class="panel-body">
                     <Add collection={this.props.collection} model={this.model}/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <a class="btn btn-info" onClick={this.save.bind(this)}>Сохранить</a>
+                                <a href={'#profile/' + this.props.model.cid} class="btn btn-default">Отмена</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         );
