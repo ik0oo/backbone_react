@@ -7,7 +7,7 @@ import Backbone from 'backbone';
 //files
 import Add from './add';
 import Profile from '../models/profile';
-import Valute from './valute';
+import Valute from './valutes';
 import base from '../models/base';
 
 export default class Create extends React.Component {
