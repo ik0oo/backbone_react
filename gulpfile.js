@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var browserSync = require('browser-sync').create();
-var runSequence = require('run-sequence');
 
 gulp.task('webpack', function () {
 	return gulp.src('./app/js/app.js')

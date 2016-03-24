@@ -25,7 +25,6 @@ export default class Text extends React.Component {
 	}
 
 	render () {
-
 		let valid = 'none';
 		const valueLink = {
 			value: this.props.model.get(this.props.property),
