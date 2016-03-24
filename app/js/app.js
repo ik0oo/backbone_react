@@ -7,65 +7,16 @@ import $ from 'jquery';
 import _ from 'underscore';
 import Backbone from 'backbone';
 
-//files
+//views
 import Aside from './views/aside';
 import Main from './views/main';
-import Profile from './models/profile'
 import Header from './views/header';
 
+//collections
+import profiles from './collections/profiles';
 
-class Profiles extends Backbone.Collection {
-	model = Profile;
-}
-
-let test = ['john', 'larry', 'jane', 'genry'];
-test = _.map(test, item => {
-	return new Profile().set({'name': item});
-});
-
-const profiles = new Profiles(test);
-
-window.prof = profiles;
-
-class Router extends Backbone.Router {
-	routes () {
-		return {
-			'profile/c:page': 'profile',
-			'profile/c:page/edit': 'edit',
-			'profile/c:page/send': 'send',
-			'add': 'add'
-		}
-	}
-
-	profile (page) {
-		this.current = 'id';
-		this.page = 'c' + page;
-
-		profiles.trigger('changeActive', profiles.get(this.page));
-	}
-
-	edit (page) {
-		this.current = 'edit';
-		this.page = 'c' + page;
-
-		profiles.trigger('changeActive', profiles.get(this.page));
-	}
-
-	send (page) {
-		this.current = 'send';
-		this.page = 'c' + page;
-
-		profiles.trigger('changeActive', profiles.get(this.page));
-	}
-
-	add () {
-		this.current = 'add';
-
-		profiles.trigger('changeActive', null);
-	}
-}
-
-const router = new Router;
+//router
+import router from './router/router';
 
 ReactDOM.render(
 	<div class="layout">
@@ -82,7 +33,4 @@ ReactDOM.render(
 , document.getElementById('app')
 );
 
-
 Backbone.history.start();
-// <Input model={model}/>
-// <Base model={model}/>

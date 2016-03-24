@@ -13,24 +13,14 @@ export default class Create extends React.Component {
             <div class="row">
                 <div class="col-xs-7">
                     <div class="form-group">
-                        <Text name={'Имя'} model={this.props.model} property={'name'} type={'text'}/>
+                        <Text name={'Имя'} model={this.props.model} property={'name'} type={'text'} validate={this.props.validate}/>
                     </div>
                 </div>
 
 
                 <div class="col-xs-7">
                     <div class="form-group">
-                        <Text name={'Email'} model={this.props.model} property={'email'} type={'email'}/>
-                    </div>
-                </div>
-
-                <div class="col-xs-7">
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" /> Я согласен с условиями
-                            </label>
-                        </div>
+                        <Text name={'Email'} model={this.props.model} property={'email'} type={'email'} validate={this.props.validate}/>
                     </div>
                 </div>
             </div>

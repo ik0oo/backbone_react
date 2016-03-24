@@ -12,6 +12,9 @@ export default class Create extends React.Component {
     constructor () {
         super();
         this.model = new Profile;
+        this.state = {
+            validate: true
+        }
     }
 
     componentDidMount () {
@@ -30,6 +33,11 @@ export default class Create extends React.Component {
     }
 
     save () {
+        if (!this.model.isValid()) {
+            this.setState({validate: false});
+            return false;
+        }
+
         this.model.trigger('save');
     }
 
@@ -42,7 +50,7 @@ export default class Create extends React.Component {
                     Редактировать профиль
                 </header>
                 <div class="panel-body">
-                    <Add collection={this.props.collection} model={this.model}/>
+                    <Add collection={this.props.collection} model={this.model} validate={this.state.validate}/>
 
                     <div class="row">
                         <div class="col-xs-12">

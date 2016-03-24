@@ -33,25 +33,25 @@ export default class Create extends React.Component {
     }
 
     remove () {
-        _.each(this.props.collection.models, model => {
-            if (model.get('bills').length) {
-                _.each(model.get('bills').models, m => {
-                    if (m) {
-                        _.each(m.attributes, (attr, iterator) => {
-                            let baseVal = base.get('_base_' + iterator);
-                            let newBaseVal = Number(baseVal) + Number(attr);
+        const collection = this.props.collection;
+        let bills = collection.get(this.props.page).get('bills');
 
-                            base.set('_base_' + iterator, newBaseVal);
-                            base.set(iterator, newBaseVal);
-                        });
-                    }
-                });
-            }
-        });
+        if (bills.length) {
+            // прибавляем в базовую модель хранящиеся в текущей модели суммы
+            _.each(bills.models, model => {
+                if (model) {
+                    _.each(model.attributes, (attr, iterator) => {
+                        let v = Number(base.get('_base_' + iterator)) + Number(attr);
 
-        this.props.collection.remove(this.props.page);
-        this.close();
-        this.props.router.navigate('#profile/c2', {trigger: true, replace: true});
+                        base.set('_base_' + iterator, v, {silent: true});
+                        base.set(iterator, v);
+                    });
+                }
+            });
+        }
+
+        this.props.collection.remove(this.props.page, {silent: true});
+        this.props.router.navigate('/', {trigger: true, replace: true});
     }
 
     render () {

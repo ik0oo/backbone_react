@@ -15,14 +15,10 @@ class Item extends React.Component {
         return (
             <div class="col-xs-4">
                 <div class="form-group">
-                    <div class="input-group m-b-10">
-                        <span class="input-group-addon">@</span>
-
-                        <Number
-                            model={this.props.model}
-                            property={this.props.type}
-                            base={this.props.base}/>
-                    </div>
+                    <Number
+                        model={this.props.model}
+                        property={this.props.type}
+                        base={this.props.base}/>
                 </div>
             </div>
         );

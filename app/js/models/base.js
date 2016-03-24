@@ -3,6 +3,27 @@ import $ from 'jquery';
 import _ from 'underscore';
 import Backbone from 'backbone';
 
+//files
+import profiles from '../collections/profiles';
+
+let data = {
+    rub: Number(),
+    usd: Number(),
+    eur: Number()
+};
+
+// получаем сколько денег висит в моделях
+_.each(profiles.models, model => {
+    let bills = model.get('bills');
+    if (bills.length) {
+        _.each(bills.models, m => {
+            _.each(m.attributes, (attr, iterator) => {
+                data[iterator] += Number(attr);
+            });
+        });
+    }
+});
+
 export default class Base extends Backbone.Model {
     defaults () {
         return {
@@ -15,13 +36,22 @@ export default class Base extends Backbone.Model {
         }
     }
 
-    //validate (attrs, options) {
-    //    if (attrs.order.rub <= 0 || attrs.order.eur <= 0 || attrs.order.eur <= 0) return 'На счету ничего нет';
-    //    if (attrs.order.rub < attrs.bill.rub || attrs.order.usd < attrs.bill.usd || attrs.order.eur < attrs.bill.eur) return 'Сумма превышает';
-    //}
+    constructor (options) {
+        super();
+        const self = this;
+
+        // вычитаем из дефолтных значених сохраненные суммы валют
+        _.each(options, (attr, iterator) => {
+            if (attr > 0) {
+                let value = self.attributes[iterator] - attr;
+
+                self.attributes[iterator] = value;
+                self.attributes['_base_' + iterator] = value;
+            }
+        });
+    }
 }
 
-const base = new Base;
-window.base = base;
+const base = new Base(data);
 
 export default base;

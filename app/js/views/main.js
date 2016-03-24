@@ -25,14 +25,15 @@ export default class Main extends React.Component {
 		this.props.router.off(null, null, this);
 	}
 
-	render () {
-		//TODO решить что-то с сайлентовым обновление base model
+	componentDidUpdate () {
 		_.each(base.attributes, (attr, iterator, array) => {
 			if (!~iterator.indexOf('_')) {
-				attr != array['_base_' + iterator] && (base.set(iterator, array['_base_' + iterator], {silent: true}));
+				attr != array['_base_' + iterator] && (base.set(iterator, array['_base_' + iterator]));
 			}
 		});
+	}
 
+	render () {
 		const model = this.props.collection.get(this.props.router.page);
 
 		if (this.props.router.current == 'edit') {

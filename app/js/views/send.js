@@ -18,6 +18,10 @@ export default class Send extends React.Component {
     }
 
     send () {
+        if (_.every(this.valuteModel.attributes, attr => {return attr == 0 || attr < 0;})) {
+            return false;
+        }
+
         _.each(base.attributes, (attr, iterator, array) => {
             if (!~iterator.indexOf('_')) {
                 array['_base_' + iterator] = attr;
@@ -34,7 +38,6 @@ export default class Send extends React.Component {
 
     render () {
         return (
-
             <section class="panel">
                 <header class="panel-heading">
                     Отправить
