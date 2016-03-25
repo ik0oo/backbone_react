@@ -11,7 +11,7 @@ export default class Profile extends React.Component {
 		return (
             <li class={active}>
                 <a href={'#profile/' + this.props.model.cid}>
-                    <i class="fa fa-dashboard"></i> <span>{this.props.model.get('name')}</span>
+                    <i class="fa fa-user"></i> <span>{this.props.model.get('name')}</span>
                 </a>
             </li>
 		);

@@ -45,7 +45,9 @@ export default class Text extends React.Component {
         return (
             <div>
                 <div class="input-group m-b-10">
-                    <span class="input-group-addon">@</span>
+                    <span class="input-group-addon">
+                        <i class={'fa fa-' + this.props.property}></i>
+                    </span>
                     <input class="form-control" type="number" valueLink={valueLink} min="0"/>
                 </div>
                 <small class="help-block validMessage" data-field="username" style={{display: this.state.valid, color: 'red'}}>Указано не верное занчение</small>

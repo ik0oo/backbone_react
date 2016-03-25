@@ -17,7 +17,7 @@ class Item extends React.Component {
         return (
             <div class="col-xs-4">
                 <span class={'sm-st-icon st-' + this.props.color}>
-                    <i class="fa fa-check-square-o"></i>
+                    <i class={'fa fa-' + this.props.valute}></i>
                 </span>
 
                 <div class="sm-st-info">
