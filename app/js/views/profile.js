@@ -3,7 +3,7 @@ import $ from 'jquery';
 import _ from 'underscore';
 import Backbone from 'backbone';
 
-export default class Profile extends React.Component {
+export default class ProfileView extends React.Component {
 	render () {
 
 		const active = this.props.model.get('active') ? ' active' : '';
