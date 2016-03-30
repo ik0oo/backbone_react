@@ -6,32 +6,54 @@ import Backbone from 'backbone';
 
 //files
 import Number from './number';
-import base from '../models/base';
-
-class Item extends React.Component {
-    render () {
-        !this.props.model.get(this.props.type) && this.props.model.set(this.props.type, 0);
-
-        return (
-            <div class="col-xs-4">
-                <div class="form-group">
-                    <Number
-                        model={this.props.model}
-                        property={this.props.type}
-                        base={this.props.base}/>
-                </div>
-            </div>
-        );
-    }
-}
 
 export default class Bill extends React.Component {
+    constructor () {
+        super();
+
+        this.collection = new Backbone.Collection;
+    }
+
+    componentDidMount () {
+        const self = this;
+        const collection = _.map(this.props.model.attributes, (attr, i) => {
+            return new Backbone.Model().set({attr: i, value: attr});
+        });
+        this.collection.add(collection);
+
+        this.collection.on('change', model => {
+            let parentModel = self.props.model;
+            let attr = model.get('attr');
+            let value = model.get('value');
+
+            parentModel.set(attr, value);
+        });
+
+        this.forceUpdate();
+    }
+
+    componentWillUnmount () {
+        this.collection.off(null, null, this);
+    }
+
     render () {
+        const items = _.map(this.collection.models, model => {
+            return (
+               <div class="col-xs-4" key={model.cid}>
+                    <div class="form-group">
+                        <Number
+                            model={model}
+                            min={0}
+                            max={1000}
+                            />
+                    </div>
+                </div>
+            );
+        });
+
         return (
             <div class="row">
-                <Item model={this.props.model} type={'rub'} base={base}/>
-                <Item model={this.props.model} type={'usd'} base={base}/>
-                <Item model={this.props.model} type={'eur'} base={base}/>
+                {items}
             </div>
         );
     }

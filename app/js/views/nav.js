@@ -8,9 +8,8 @@ import Backbone from 'backbone';
 import Add from './add';
 import Profile from '../models/profile';
 import Valute from './valutes';
-import base from '../models/base';
 
-export default class Create extends React.Component {
+export default class Nav extends React.Component {
     constructor () {
         super();
 
@@ -20,57 +19,53 @@ export default class Create extends React.Component {
         };
     }
 
-    open () {
-        this.setState(
-            {show: 'in', display: 'block'}
-        );
-    }
-
-    close () {
-        this.setState(
-            {show: '', display: 'none'}
-        );
-    }
-
-    remove () {
-        const collection = this.props.collection;
-        let bills = collection.get(this.props.page).get('bills');
-
-        if (bills.length) {
-            // прибавляем в базовую модель хранящиеся в текущей модели суммы
-            _.each(bills.models, model => {
-                if (model) {
-                    _.each(model.attributes, (attr, iterator) => {
-                        let v = Number(base.get('_base_' + iterator)) + Number(attr);
-
-                        base.set('_base_' + iterator, v, {silent: true});
-                        base.set(iterator, v);
-                    });
-                }
-            });
-        }
-
-        this.props.collection.remove(this.props.page, {silent: true});
-        this.props.router.navigate('/', {trigger: true, replace: true});
-    }
+    //open () {
+    //    this.setState(
+    //        {show: 'in', display: 'block'}
+    //    );
+    //}
+    //
+    //close () {
+    //    this.setState(
+    //        {show: '', display: 'none'}
+    //    );
+    //}
+    //
+    //remove () {
+    //    const collection = this.props.collection;
+    //    let bills = collection.get(this.props.page).get('bills');
+    //
+    //    if (bills.length) {
+    //        // прибавляем в базовую модель хранящиеся в текущей модели суммы
+    //        _.each(bills.models, model => {
+    //            if (model) {
+    //                _.each(model.attributes, (attr, iterator) => {
+    //                    let v = Number(base.get('_base_' + iterator)) + Number(attr);
+    //
+    //                    base.set('_base_' + iterator, v, {silent: true});
+    //                    base.set(iterator, v);
+    //                });
+    //            }
+    //        });
+    //    }
+    //
+    //    this.props.collection.remove(this.props.page, {silent: true});
+    //    this.props.router.navigate('/', {trigger: true, replace: true});
+    //}
 
     render () {
+        const model = this.props.model;
+        console.log(model);
+
         return (
-            <div class="col-xs-6">
-                <h2>{this.props.name}</h2>
-                <p>{this.props.email}</p>
+            <div>
+                <h2>{model.get('name')}</h2>
+                <p>{model.get('email')}</p>
 
+                 <button class="btn btn-info" >Редактировать</button>
+                 <button class="btn btn-info" >Отправить</button>
+                 <button class="btn btn-default" >Удалить</button>
 
-                <div className="row">
-                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'rub'} />
-                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'usd'} />
-                    <Valute collection={this.props.collection.get(this.props.page).get('bills')} _key={'eur'} />
-                </div>
-
-
-                <a href={'#profile/' + this.props.page + '/edit'} class="btn btn-info" >Редактировать</a>
-                <a href={'#profile/' + this.props.page + '/send'} class="btn btn-info" >Отправить</a>
-                <a  class="btn btn-default" onClick={this.open.bind(this)}>Удалить</a>
 
 
                 <div class={'modal fade ' + this.state.show} style={{'display': this.state.display}} tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
@@ -80,8 +75,8 @@ export default class Create extends React.Component {
                                 <h3>Вы уверены?</h3>
                             </div>
                             <div class="modal-footer">
-                                <button data-dismiss="modal" class="btn btn-default" type="button" onClick={this.close.bind(this)}>Отмена</button>
-                                <button class="btn btn-danger" type="button" onClick={this.remove.bind(this)}>Удалить</button>
+                                <button data-dismiss="modal" class="btn btn-default" type="button" onClick={this.props.onCancel()}>Отмена</button>
+                                <button class="btn btn-danger" type="button" onClick={this.props.onDelete()}>Удалить</button>
                             </div>
                         </div>
                     </div>
@@ -90,3 +85,13 @@ export default class Create extends React.Component {
         );
     }
 }
+
+//<div className="row">
+//    <Valute collection={model.get('bills')} _key={'rub'} />
+//    <Valute collection={model.get('bills')} _key={'usd'} />
+//    <Valute collection={model.get('bills')} _key={'eur'} />
+//</div>
+
+                            //<a href={'#profile/' + this.props.id + '/edit'} class="btn btn-info" >Редактировать</a>
+                            //<a href={'#profile/' + this.props.id + '/send'} class="btn btn-info" >Отправить</a>
+                            //<a  class="btn btn-default" onClick={this.open.bind(this)}>Удалить</a>

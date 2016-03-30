@@ -6,14 +6,11 @@ import Backbone from 'backbone';
 export default class Profile extends Backbone.Model {
 	defaults () {
 		return {
-			photo: '#',
 			name: '',
-			email: '',
-			active: false,
-			bills: new Backbone.Collection
+			email: ''
 		}
 	}
-
+    //
 	validate (attrs, options) {
 		if ($.trim(attrs.name) === '') return 'Поле не заполнено';
 		if ($.trim(attrs.email) === '') return 'Поле не заполнено';

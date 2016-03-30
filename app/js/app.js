@@ -12,21 +12,27 @@ import Main from './views/main';
 import HeaderItem from './views/header-item';
 import ProfileView from './views/profile';
 
+//models
+import Profile from './models/profile';
+import BillModel from './models/bill';
+
 //collections
 import Profiles from './collections/profiles';
 
-//router
-import RouterView from './router/router-view';
+//routes
+import Create from './views/create'
+import Nav from './views/nav';
+
 
 class App extends React.Component {
-    constructor () {
-        super();
+    constructor (options) {
+        super(options);
 
         this.state = {
             base: {
-                rub: 1000,
-                usd: 1000,
-                eur: 1000
+                rub: options.rub,
+                usd: options.usd,
+                eur: options.eur
             },
             routeView: null,
             collection: new Profiles
@@ -50,11 +56,18 @@ class App extends React.Component {
             }
 
             defaultRoute (page) {
+                self.router.current = page;
                 self.setState({routeView: 'default'});
             }
 
             add (page) {
+                self.router.current = page;
                 self.setState({routeView: 'add'});
+            }
+
+            profile (page) {
+                self.router.current = page;
+                self.setState({routeView: 'id'});
             }
         }
 
@@ -62,9 +75,54 @@ class App extends React.Component {
         Backbone.history.start();
     }
 
-    addProfile (model) {
-        this.state.collection.add(model);
-        this.setState({collection: this.state.collection});
+    addProfile (model, isChecked) {
+        if (isChecked && model.isValid()) {
+            let newModel = this.state.collection.add(model);
+
+            this.setState({collection: this.state.collection});
+            this.router.navigate('#profile/' + newModel.cid, {trigger: true, replace: false});
+
+        } else {
+            return false;
+        }
+    }
+
+    deleteProfile () {
+
+    }
+
+    cancelEditing () {
+
+    }
+
+    updateBill (model, billModel) {
+        !model.get('bills') && model.set('bills', new Backbone.Collection);
+
+        model.get('bills').add(billModel);
+        this.updateBase(billModel);
+    }
+
+    updateProfile (model, profileModel) {
+        model.set(profileModel.toJSON(), {silent: true})
+    }
+
+    updateBase (model) {
+        if (model) {
+            _.each(model.attributes, (attr, i) => {
+                let sum = this.props[i]- attr;
+
+                if (sum <= this.props[i] && sum >= 0) {
+                    this.state.base[i] = sum;
+                }
+            });
+
+            this.setState({base: this.state.base});
+
+        } else {
+            _.each(this.state.collection.models, model => {
+                console.log(model);
+            });
+        }
     }
 
     showCreateProfileView () {
@@ -82,6 +140,30 @@ class App extends React.Component {
             return <ProfileView model={model} key= {model.cid} />;
         });
 
+        // routing
+        let routeView;
+        if (this.state.routeView === 'add') {
+            let model = new Profile;
+
+            routeView =
+                <Create
+                    onSave={this.addProfile.bind(this, model)}
+                    onUpdateBill={this.updateBill.bind(this, model)}
+                    onUpdateProfile={this.updateProfile.bind(this, model)}
+                />
+            ;
+        }
+        if (this.state.routeView === 'id') {
+            let id = 'c' + this.router.current;
+            let model = this.state.collection.get(id);
+
+            routeView =
+                <Nav
+                    model={model}
+                    onCancel={this.cancelEditing.bind(this)}
+                    onDelete={this.deleteProfile.bind(this)}
+                />;
+        }
 
         return (
             <div class="layout">
@@ -100,12 +182,11 @@ class App extends React.Component {
 
                 <div class="container-fluid">
                     <div class="row">
-
                         <aside class="right-side">
                             <section class="content">
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        <RouterView view={this.state.routeView} />
+                                        {routeView}
                                     </div>
                                 </div>
                             </section>
@@ -127,5 +208,5 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-    <App />, document.getElementById('app')
+    <App rub={1000} eur={1000} usd={1000}/>, document.getElementById('app')
 );

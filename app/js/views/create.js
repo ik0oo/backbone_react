@@ -6,48 +6,58 @@ import Backbone from 'backbone';
 
 //files
 import Add from './add';
-import Profile from '../models/profile';
 import Bill from './bill';
-import base from '../models/base';
+import BillModel from '../models/bill';
+import ProfileModel from '../models/profile';
 
 export default class Create extends React.Component {
 	constructor () {
 		super();
-		this.model = new Profile;
-		this.valuteModel = new Backbone.Model;
 		this.state = {
-			validate: true
+			checked: false,
+			style: 'inherit'
 		};
-		this.checked = false;
-		this.style = {color: 'inherit'};
+
+		this.profileModel = new ProfileModel;
+		this.billModel = new BillModel;
 	}
 
-	add () {
-		this.style = this.checked ? {color: 'inherit'} : {color: 'red'};
+	componentDidMount () {
+		const self = this;
 
-		if (!this.model.isValid() || !this.checked) {
-
-			this.setState({validate: false});
-			return false;
-		}
-
-		_.each(base.attributes, (attr, iterator, array) => {
-			if (!~iterator.indexOf('_')) {
-				array['_base_' + iterator] = attr;
-			}
+		this.billModel.on('change', model => {
+			self.props.onUpdateBill(model);
 		});
 
-		this.model.set('active', true);
-		this.model.get('bills').add(this.valuteModel);
-		const newModel = this.props.collection.add(this.model.toJSON());
+		this.profileModel.on('change', model => {
+			self.props.onUpdateProfile(model);
+		});
+	}
 
-		this.props.router.navigate('#profile/' + newModel.cid, {trigger: true, replace: true});
+	componentWillUnmount () {
+		this.billModel.off(null, null, this);
+		this.profileModel.off(null, null, this);
 	}
 
 	check (e) {
-		let checked = this.checked ? false : true;
+		if (this.state.style === 'red' && !this.state.checked) {
+			this.setState({
+				checked: !this.state.checked,
+				style: 'inherit'
+			});
+		} else {
+			this.setState({checked: !this.state.checked});
+		}
 
-		this.checked = checked;
+	}
+
+	onSave () {
+		this.billModel.trigger('validate');
+		this.profileModel.trigger('validate');
+
+		if (!this.state.checked) this.setState({style: 'red'});
+
+		this.props.onSave(this.state.checked);
 	}
 
 	render () {
@@ -57,13 +67,14 @@ export default class Create extends React.Component {
 					Добавить профиль
 				</header>
 				<div class="panel-body">
-					<Add collection={this.props.collection} model={this.model} validate={this.state.validate}/>
+
+					<Add model={this.profileModel} />
 
 					<div class="row">
 						<div class="col-xs-7">
                             <div class="form-group">
                                 <div class="checkbox">
-                                    <label style={this.style}>
+                                    <label style={{color: this.state.style}}>
                                         <input type="checkbox" onChange={this.check.bind(this)}/> Я согласен с условиями *
                                     </label>
                                 </div>
@@ -71,12 +82,12 @@ export default class Create extends React.Component {
                         </div>
 					</div>
 
-					<Bill model={this.valuteModel}/>
+					<Bill model={this.billModel} />
 
 					<div class="row">
 						<div class="col-xs-12">
                             <div class="form-group">
-                                <button type="submit" class="btn btn-info" onClick={this.add.bind(this)}>Сохранить</button>
+                                <button class="btn btn-info" onClick={this.onSave.bind(this)}>Сохранить</button>
                             </div>
                         </div>
 					</div>

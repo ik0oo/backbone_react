@@ -1,44 +1,38 @@
 // libs
-import $ from 'jquery';
 import React from 'react';
+import Backbone from 'backbone';
 
 export default class Text extends React.Component {
     constructor () {
         super();
-        this.state = {
-            valid: 'none',
-            value: 0
-        };
+
+        this.valid = 'none';
+    }
+
+    componentDidMount () {
+        this.props.model.on('change:value', this.forceUpdate.bind(this, null));
+    }
+
+    componentWillUnmount () {
+        this.props.model.off(null, null, this);
     }
 
     handelChange (newValue) {
-        const val = {};
-        let base = this.props.base;
-        let base_const = base.get('_base_' + this.props.property);
-        let valid = 'none';
+        let max = this.props.max;
+        let min = this.props.min;
 
-        if (newValue < 0 || newValue > base.get('_base_' + this.props.property)) {
-            valid = 'block';
-            val[this.props.property] = 0;
-
-            base.set(this.props.property, base_const);
+        if (newValue <= min || newValue > max) {
+            this.valid = 'block';
         } else {
-            val[this.props.property] = newValue;
-
-            base.set(this.props.property, base_const - newValue);
+            this.valid = 'none';
         }
 
-        this.props.model.set(val, {silent: true});
-
-        this.setState({
-            value: newValue,
-            valid: valid
-        });
+        this.props.model.set('value', newValue);
     }
 
     render () {
         const valueLink = {
-            value: this.state.value,
+            value: this.props.model.get('value'),
             requestChange: this.handelChange.bind(this)
         };
 
@@ -46,11 +40,11 @@ export default class Text extends React.Component {
             <div>
                 <div class="input-group m-b-10">
                     <span class="input-group-addon">
-                        <i class={'fa fa-' + this.props.property}></i>
+                        <i class={'fa fa-' + this.props.model.get('attr')}></i>
                     </span>
-                    <input class="form-control" type="number" valueLink={valueLink} min="0"/>
+                    <input class="form-control" type="number" valueLink={valueLink} min={this.props.min}/>
                 </div>
-                <small class="help-block validMessage" data-field="username" style={{display: this.state.valid, color: 'red'}}>Указано не верное занчение</small>
+                <small class="help-block validMessage" data-field="username" style={{display: this.valid, color: 'red'}}>Указано не верное занчение</small>
             </div>
         );
     }
