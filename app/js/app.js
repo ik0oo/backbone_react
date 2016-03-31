@@ -11,6 +11,7 @@ import Backbone from 'backbone';
 import Main from './views/main';
 import HeaderItem from './views/header-item';
 import ProfileView from './views/profile';
+import Header from './views/header';
 
 //models
 import Profile from './models/profile';
@@ -22,6 +23,8 @@ import Profiles from './collections/profiles';
 //routes
 import Create from './views/create'
 import Nav from './views/nav';
+import Add from './views/add';
+import Bill from './views/bill';
 
 
 class App extends React.Component {
@@ -29,21 +32,31 @@ class App extends React.Component {
         super(options);
 
         this.state = {
-            base: {
-                rub: options.rub,
-                usd: options.usd,
-                eur: options.eur
-            },
             routeView: null,
             collection: new Profiles
         };
+
+        window.collection = this.state.collection;
+
+        this.base = {
+            rub: options.rub,
+            usd: options.usd,
+            eur: options.eur
+        };
+
+        this.headerModel = new Backbone.Model().set(this.base)
+    }
+
+    componentDidUpdate () {
+        _.each(this.base, (attr, i) => {
+            this.base[i] = this.headerModel.get(i);
+        });
     }
 
     componentDidMount () {
         const self = this;
 
         // создаем роутинг при создании компонента
-
         class Router extends Backbone.Router {
             routes () {
                 return {
@@ -53,6 +66,10 @@ class App extends React.Component {
                     'profile/c:page/send': 'send',
                     'add': 'add'
                 };
+            }
+
+            emptyRoute (id) {
+                return self.state.collection.get('c' + id);
             }
 
             defaultRoute (page) {
@@ -66,8 +83,21 @@ class App extends React.Component {
             }
 
             profile (page) {
+                if (!this.emptyRoute(page)) return this.defaultRoute();
                 self.router.current = page;
                 self.setState({routeView: 'id'});
+            }
+
+            send (page) {
+                if (!this.emptyRoute(page)) return this.defaultRoute();
+                self.router.current = page;
+                self.setState({routeView: 'send'});
+            }
+
+            edit (page) {
+                if (!this.emptyRoute(page)) return this.defaultRoute();
+                self.router.current = page;
+                self.setState({routeView: 'edit'});
             }
         }
 
@@ -80,19 +110,42 @@ class App extends React.Component {
             let newModel = this.state.collection.add(model);
 
             this.setState({collection: this.state.collection});
-            this.router.navigate('#profile/' + newModel.cid, {trigger: true, replace: false});
+            this.toProfile(newModel);
 
         } else {
             return false;
         }
     }
 
-    deleteProfile () {
-
+    saveProfile (model, profileModel) {
+        model.set(profileModel.toJSON(), {silent: true});
+        this.toProfile(model);
     }
 
-    cancelEditing () {
+    saveBill (model, billModel) {
+        !model.get('bills') && model.set('bills', new Backbone.Collection);
 
+        model.get('bills').add(billModel);
+        this.toProfile(model);
+    }
+
+    deleteProfile (model) {
+        this.state.collection.remove(model.cid);
+
+        this.setState({collection: this.state.collection});
+        this.router.navigate('/', {trigger: true, replace: false});
+    }
+
+    sendBill (model) {
+        this.router.navigate('#profile/' + model.cid + '/send', {trigger: true, replace: false});
+    }
+
+    editProfile (model) {
+        this.router.navigate('#profile/' + model.cid + '/edit', {trigger: true, replace: false});
+    }
+
+    toProfile (model) {
+        this.router.navigate('#profile/' + model.cid, {trigger: true, replace: false});
     }
 
     updateBill (model, billModel) {
@@ -103,20 +156,18 @@ class App extends React.Component {
     }
 
     updateProfile (model, profileModel) {
-        model.set(profileModel.toJSON(), {silent: true})
+        model.set(profileModel.attributes, {silent: true})
     }
 
     updateBase (model) {
         if (model) {
             _.each(model.attributes, (attr, i) => {
-                let sum = this.props[i]- attr;
+                let sum = this.base[i]- attr;
 
-                if (sum <= this.props[i] && sum >= 0) {
-                    this.state.base[i] = sum;
+                if (sum <= this.base[i] && sum >= 0) {
+                    this.headerModel.set(i, sum);
                 }
             });
-
-            this.setState({base: this.state.base});
 
         } else {
             _.each(this.state.collection.models, model => {
@@ -130,11 +181,6 @@ class App extends React.Component {
     }
 
     render () {
-        // добавление элементов с отатком денежных средств
-        const headerItems = _.map(this.state.base, (item, i) => {
-            return <HeaderItem valuta={i} value={item} key={i} />;
-        });
-
         // добавляем профили в сайдбар
         const profiles = _.map(this.state.collection.models, model => {
             return <ProfileView model={model} key= {model.cid} />;
@@ -147,9 +193,40 @@ class App extends React.Component {
 
             routeView =
                 <Create
+                    header={'Добавить пользователя'}
                     onSave={this.addProfile.bind(this, model)}
                     onUpdateBill={this.updateBill.bind(this, model)}
                     onUpdateProfile={this.updateProfile.bind(this, model)}
+                    scores={this.base}
+                />
+            ;
+        }
+        if (this.state.routeView === 'edit') {
+            let id = 'c' + this.router.current;
+            let model = this.state.collection.get(id);
+
+            routeView =
+                <Create
+                    type={'edit'}
+                    model={model.toJSON()}
+                    header={'Редактировать пользователя'}
+                    onSave={this.saveProfile.bind(this, model)}
+                    onCancel={this.toProfile.bind(this, model)}
+                />
+            ;
+        }
+        if (this.state.routeView === 'send') {
+            let id = 'c' + this.router.current;
+            let model = this.state.collection.get(id);
+
+            routeView =
+                <Create
+                    type={'send'}
+                    header={'Отправить перевод'}
+                    onSave={this.saveBill.bind(this, model)}
+                    onCancel={this.toProfile.bind(this, model)}
+                    onUpdateBill={this.updateBill.bind(this, model)}
+                    score={this.base}
                 />
             ;
         }
@@ -160,25 +237,17 @@ class App extends React.Component {
             routeView =
                 <Nav
                     model={model}
-                    onCancel={this.cancelEditing.bind(this)}
                     onDelete={this.deleteProfile.bind(this)}
+                    onEditPforile={this.editProfile.bind(this)}
+                    onSendBill={this.sendBill.bind(this)}
                 />;
         }
 
         return (
             <div class="layout">
-                <header class="header">
-                    <div class="logo">
-                        Пользователи
-                    </div>
-                    <nav class="navbar navbar-static-top">
-                        <div class="col-xs-offset-6 col-xs-6">
-                            <div class="row">
-                                {headerItems}
-                            </div>
-                        </div>
-                    </nav>
-                </header>
+                <Header
+                    model={this.headerModel}
+                />
 
                 <div class="container-fluid">
                     <div class="row">

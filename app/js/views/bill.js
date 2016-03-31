@@ -16,9 +16,20 @@ export default class Bill extends React.Component {
 
     componentDidMount () {
         const self = this;
-        const collection = _.map(this.props.model.attributes, (attr, i) => {
-            return new Backbone.Model().set({attr: i, value: attr});
+        const collection = [];
+        _.each(this.props.model.attributes, (attr, i) => {
+            if (typeof attr !== 'object') {
+
+                let model = new Backbone.Model().set({
+                    attr: i,
+                    value: attr
+                });
+                if (self.props.score && self.props.score[i]) model.set('_max', self.props.score[i]);
+
+                collection.push(model);
+            }
         });
+
         this.collection.add(collection);
 
         this.collection.on('change', model => {
@@ -44,7 +55,7 @@ export default class Bill extends React.Component {
                         <Number
                             model={model}
                             min={0}
-                            max={1000}
+                            max={model.get('_max')}
                             />
                     </div>
                 </div>

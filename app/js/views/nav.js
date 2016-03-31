@@ -19,54 +19,25 @@ export default class Nav extends React.Component {
         };
     }
 
-    //open () {
-    //    this.setState(
-    //        {show: 'in', display: 'block'}
-    //    );
-    //}
-    //
-    //close () {
-    //    this.setState(
-    //        {show: '', display: 'none'}
-    //    );
-    //}
-    //
-    //remove () {
-    //    const collection = this.props.collection;
-    //    let bills = collection.get(this.props.page).get('bills');
-    //
-    //    if (bills.length) {
-    //        // прибавляем в базовую модель хранящиеся в текущей модели суммы
-    //        _.each(bills.models, model => {
-    //            if (model) {
-    //                _.each(model.attributes, (attr, iterator) => {
-    //                    let v = Number(base.get('_base_' + iterator)) + Number(attr);
-    //
-    //                    base.set('_base_' + iterator, v, {silent: true});
-    //                    base.set(iterator, v);
-    //                });
-    //            }
-    //        });
-    //    }
-    //
-    //    this.props.collection.remove(this.props.page, {silent: true});
-    //    this.props.router.navigate('/', {trigger: true, replace: true});
-    //}
+    showConfirm () {
+        this.setState({show: 'in', display: 'block'});
+    }
+
+    onCancel () {
+        this.setState({show: '', display: 'none'});
+    }
 
     render () {
         const model = this.props.model;
-        console.log(model);
 
         return (
             <div>
                 <h2>{model.get('name')}</h2>
                 <p>{model.get('email')}</p>
 
-                 <button class="btn btn-info" >Редактировать</button>
-                 <button class="btn btn-info" >Отправить</button>
-                 <button class="btn btn-default" >Удалить</button>
-
-
+                 <button class="btn btn-info" onClick={this.props.onEditPforile.bind(this, this.props.model)}>Редактировать</button>
+                 <button class="btn btn-info" onClick={this.props.onSendBill.bind(this, this.props.model)}>Отправить</button>
+                 <button class="btn btn-default" onClick={this.showConfirm.bind(this)}>Удалить</button>
 
                 <div class={'modal fade ' + this.state.show} style={{'display': this.state.display}} tabIndex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
                     <div class="modal-dialog">
@@ -75,8 +46,8 @@ export default class Nav extends React.Component {
                                 <h3>Вы уверены?</h3>
                             </div>
                             <div class="modal-footer">
-                                <button data-dismiss="modal" class="btn btn-default" type="button" onClick={this.props.onCancel()}>Отмена</button>
-                                <button class="btn btn-danger" type="button" onClick={this.props.onDelete()}>Удалить</button>
+                                <button data-dismiss="modal" class="btn btn-default" type="button" onClick={this.onCancel.bind(this)}>Отмена</button>
+                                <button class="btn btn-danger" type="button" onClick={this.props.onDelete.bind(this, this.props.model)}>Удалить</button>
                             </div>
                         </div>
                     </div>
