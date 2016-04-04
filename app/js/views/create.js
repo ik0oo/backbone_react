@@ -61,6 +61,9 @@ export default class Create extends React.Component {
 	}
 
 	onSave () {
+		if (this.props.type !== 'edit') {
+			this.billModel.trigger('validate');
+		}
 		if (this.props.type !== 'send') {
 			this.profileModel.trigger('validate');
 		}

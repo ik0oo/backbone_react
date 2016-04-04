@@ -7,7 +7,7 @@ import Backbone from 'backbone';
 //files
 import Add from './add';
 import Profile from '../models/profile';
-import Valute from './valutes';
+//import Valute from './valutes';
 
 export default class Nav extends React.Component {
     constructor () {
@@ -29,11 +29,54 @@ export default class Nav extends React.Component {
 
     render () {
         const model = this.props.model;
+        const tables = {
+            rub: [],
+            usd: [],
+            eur: []
+        };
+
+        if (this.props.bills && this.props.bills.length) {
+            _.each(this.props.bills.models, model => {
+                _.each(model.attributes, (attr, i) => {
+                    if (attr > 0) {
+                        tables[i].push(
+                            <tr key={model.cid + i}>
+                                <td>{attr + ' ' + i}</td>
+                                <td>
+                                    <span onClick={this.props.onRemoveBill.bind(this, model, i)}>x</span>
+                                </td>
+                            </tr>
+                        );
+                    }
+                });
+            });
+        }
 
         return (
             <div>
                 <h2>{model.get('name')}</h2>
                 <p>{model.get('email')}</p>
+
+                <table class="table table-condensed">
+                    <tbody>
+                        <tr>rub</tr>
+                        {tables.rub}
+                    </tbody>
+                </table>
+
+                <table class="table table-condensed">
+                    <tbody>
+                    <tr>usd</tr>
+                    {tables.usd}
+                    </tbody>
+                </table>
+
+                <table class="table table-condensed">
+                    <tbody>
+                    <tr>eur</tr>
+                    {tables.eur}
+                    </tbody>
+                </table>
 
                  <button class="btn btn-info" onClick={this.props.onEditPforile.bind(this, this.props.model)}>Редактировать</button>
                  <button class="btn btn-info" onClick={this.props.onSendBill.bind(this, this.props.model)}>Отправить</button>

@@ -107,6 +107,18 @@ class App extends React.Component {
 
     addProfile (model, isChecked) {
         if (isChecked && model.isValid()) {
+            let bills = model.get('bills');
+            if (bills && bills.length) {
+                let billsValid;
+                _.each(bills.models, m => {
+                    billsValid = _.every(m.attributes, (attr, i) => {
+                        return this.base[i] >= attr;
+                    });
+                });
+
+                if (!billsValid) return false;
+            }
+
             let newModel = this.state.collection.add(model);
 
             this.setState({collection: this.state.collection});
@@ -129,7 +141,26 @@ class App extends React.Component {
         this.toProfile(model);
     }
 
+    removeBill (updateModel, valute) {
+        let newValue = Number(this.headerModel.get(valute)) + Number(updateModel.get(valute));
+        this.headerModel.set(valute, newValue);
+
+        updateModel.set(valute, 0, {silent: true});
+        this.setState({collection: this.state.collection});
+    }
+
     deleteProfile (model) {
+        let bills = model.get('bills');
+        if (bills.length) {
+            _.each(bills.models, m => {
+                _.each(m.attributes, (attr, i) => {
+                    let hm = Number(this.headerModel.get(i)) + Number(attr);
+                    this.headerModel.set(i, hm, {silent: true});
+                });
+            });
+            this.headerModel.trigger('change');
+        }
+
         this.state.collection.remove(model.cid);
 
         this.setState({collection: this.state.collection});
@@ -197,7 +228,7 @@ class App extends React.Component {
                     onSave={this.addProfile.bind(this, model)}
                     onUpdateBill={this.updateBill.bind(this, model)}
                     onUpdateProfile={this.updateProfile.bind(this, model)}
-                    scores={this.base}
+                    score={this.base}
                 />
             ;
         }
@@ -240,6 +271,8 @@ class App extends React.Component {
                     onDelete={this.deleteProfile.bind(this)}
                     onEditPforile={this.editProfile.bind(this)}
                     onSendBill={this.sendBill.bind(this)}
+                    bills={model.get('bills')}
+                    onRemoveBill={this.removeBill.bind(this)}
                 />;
         }
 
