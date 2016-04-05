@@ -15,14 +15,12 @@ export default class HeaderItem extends React.Component {
     render () {
 
         return (
-            <div class="col-xs-4">
-                <span class={'sm-st-icon st-' + this.color(this.props.valuta)}>
+            <div class="valute">
+                <span class={'valute__icon' + ' valute__icon--' + this.color(this.props.valuta)}>
                     <i class={'fa fa-' + this.props.valuta}></i>
                 </span>
 
-                <div class="sm-st-info">
-                    <span>{this.props.value}</span>
-                </div>
+                <span class="valute__data">{this.props.value}</span>
             </div>
         );
     }

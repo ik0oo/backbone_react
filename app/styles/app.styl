@@ -1,52 +1,35 @@
-@import 'bootstrap.min.css';
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,cyrillic);
+@import 'normalize.css';
 @import 'font-awesome.min.css';
 @import 'ionicons.min.css';
-@import 'style.css';
+
+@import 'blocks/**/*';
+
+*, *:after, *:before
+  box-sizing border-box
 
 body
   min-width 1000px
+  font-family 'Roboto', sans-serif
 
-header.header
-  height auto
+.layout
+  display flex
+  flex-flow row wrap
+  min-height 100vh
 
-  .logo
-    width 220px
-    float left
-    text-align center
+h2
+  margin 10px 0
+  font-size 20px
+  text-transform uppercase
 
-  .navbar
-    float right
-    width calc(100% - 220px)
+p
+  margin 0 0 10px
 
-  .navbar
-  .logo
-    height 65px
-    line-height 65px
+.grey
+  color #8e8c8c
 
-  .sm-st-icon
-  .sm-st-info
-    display inline-block
-    vertical-align middle
-    float none
-
-  .sm-st-icon
-    width 50px
-    height 50px
-    line-height 50px
-
-.left-side
-  top 65px
-  left 0
-
-.right-side
-  margin-left 235px
-
-.sidebar
-  .sidebar-menu
-    margin-bottom 15px
-
-    +.btn
-      margin-left 15px
-
-.btn
-  margin-right 5px
+.clearfix
+  display table-cell
+  width 100%
+  overflow hidden
+  clear both

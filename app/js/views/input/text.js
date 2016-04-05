@@ -41,21 +41,16 @@ export default class Text extends React.Component {
 	}
 
 	render () {
-		let valid = 'none';
 		const valueLink = {
 			value: this.props.model.get('value'),
 			requestChange: this.handelChange.bind(this)
 		};
 
-		//if ($.trim(valueLink.value) === '' && !this.firstValid || !this.props.validate && $.trim(valueLink.value) === '') {
-		//	valid = 'block';
-		//}
-
 		return (
-			<div>
+			<div class="input-field">
 				<label>{this.props.model.get('attr')}</label> <br/>
-				<input class="form-control" type="text" valueLink={valueLink}/>
-				<small class="help-block validMessage" data-field="username" style={{display: this.valid, color: 'red'}}>Поле не заполнено</small>
+				<input class="text" type="text" valueLink={valueLink}/>
+				<small class="validMessage" style={{display: this.valid, color: 'red'}}>Поле не заполнено</small>
 			</div>
 		);
 	}

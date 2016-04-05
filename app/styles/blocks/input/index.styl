@@ -1,0 +1,52 @@
+input
+  outline none
+
+label
+  display inline-block
+  font-size 12px
+  margin-bottom 5px
+
+input.text
+input.number
+  display inline-block
+  height 25px
+  width 100%
+  text-indent 10px
+  border 1px solid #ccc
+  border-radius 4px
+  font-size 12px
+
+
+
+.input
+  &-field
+    margin-bottom 15px
+
+  &-group
+    display inline-block
+    width (100 / 3)%
+    vertical-align top
+    margin-bottom 15px
+
+    &-addon
+      display inline-block
+      width 25px
+      height 25px
+      font-size 12px
+      text-align center
+      line-height 25px
+      background-color #ddd
+      border 1px solid #ccc
+      border-radius 4px 0 0 4px
+      border-right none
+      color #666
+      vertical-align middle
+
+      + input
+        border-radius 0 4px 4px 0
+        width calc(100% - 30px)
+        vertical-align middle
+
+.checkbox
+  margin-bottom 15px
+

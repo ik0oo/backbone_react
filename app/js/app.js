@@ -149,6 +149,10 @@ class App extends React.Component {
         Backbone.history.start();
     }
 
+    //selectProfile (model) {
+    //    this.toProfile(model);
+    //}
+
     addProfile (model, isChecked) {
         if (isChecked && model.isValid()) {
             let bills = model.get('bills');
@@ -265,7 +269,7 @@ class App extends React.Component {
                 active = model.cid === 'c' + this.router.current ? true : false;
             }
 
-            return <ProfileView model={model} active={active} key={model.cid} />;
+            return <ProfileView model={model} active={active} onClick={this.toProfile.bind(this, model)} key={model.cid} />;
         });
 
         // routing
@@ -329,31 +333,27 @@ class App extends React.Component {
 
         return (
             <div class="layout">
-                <Header
-                    model={this.headerModel}
-                />
-
-                <div class="container-fluid">
-                    <div class="row">
-                        <aside class="right-side">
-                            <section class="content">
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        {routeView}
-                                    </div>
-                                </div>
-                            </section>
-                        </aside>
-
-                        <aside class="aside left-side sidebar-offcanvas">
-                            <section class="sidebar">
-                                <ul class="sidebar-menu">
-                                    {profiles}
-                                </ul>
-                                <button class="btn btn-primary btn-addon btn-sm" onClick={this.showCreateProfileView.bind(this)}>Добавить</button>
-                            </section>
-                        </aside>
+                <aside class="aside">
+                    <div className="aside__header">Пользователи</div>
+                    <nav class="aside__menu">
+                        {profiles}
+                    </nav>
+                    <div className="aside__add">
+                        <button class="btn btn--blue" onClick={this.showCreateProfileView.bind(this)}>Добавить</button>
                     </div>
+
+                </aside>
+
+
+                <div className="main">
+                    <Header
+                        model={this.headerModel}
+                    />
+
+                    <div class="main__container">
+                        {routeView}
+                    </div>
+
                 </div>
             </div>
         );

@@ -22,17 +22,8 @@ export default class Header extends React.Component {
         });
 
         return (
-            <header class="header">
-                <div class="logo">
-                    Пользователи
-                </div>
-                <nav class="navbar navbar-static-top">
-                    <div class="col-xs-offset-6 col-xs-6">
-                        <div class="row">
-                            {headerItems}
-                        </div>
-                    </div>
-                </nav>
+            <header class="main__header">
+                {headerItems}
             </header>
         );
     }

@@ -50,20 +50,17 @@ export default class Bill extends React.Component {
     render () {
         const items = _.map(this.collection.models, model => {
             return (
-               <div class="col-xs-4" key={model.cid}>
-                    <div class="form-group">
-                        <Number
-                            model={model}
-                            min={0}
-                            max={model.get('_max')}
-                            />
-                    </div>
-                </div>
+                <Number
+                    model={model}
+                    min={0}
+                    max={model.get('_max')}
+                    key={model.cid}
+                />
             );
         });
 
         return (
-            <div class="row">
+            <div>
                 {items}
             </div>
         );

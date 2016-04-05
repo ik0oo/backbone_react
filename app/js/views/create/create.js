@@ -87,79 +87,61 @@ export default class Create extends React.Component {
 			this.profileModel.set(this.props.model);
 
 			return (
-				<section class="panel">
-					<header class="panel-heading">
+				<div class="panel">
+					<header class="panel__header">
 						{this.props.header}
 					</header>
-					<div class="panel-body">
+					<div class="panel__body">
 						<Add model={this.profileModel} />
 
-						<div class="row">
-							<div class="col-xs-12">
-								<div class="form-group">
-									<button class="btn btn-info" onClick={this.onSave.bind(this)}>Сохранить</button>
-									<button class="btn btn-info" onClick={this.props.onCancel}>Отмена</button>
-								</div>
-							</div>
+						<div class="btn-block">
+							<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
+							<button class="btn btn--blue" onClick={this.props.onCancel}>Отмена</button>
 						</div>
 					</div>
-				</section>
+				</div>
 			);
 		}
 
 		if (this.props.type === 'send') {
 			return (
-                <section class="panel">
-                    <header class="panel-heading">
+                <div class="panel">
+                    <header class="panel__header">
                         {this.props.header}
                     </header>
-                    <div class="panel-body">
+                    <div class="panel__body">
 
                         <Bill model={this.billModel} score={this.props.score}/>
 
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="form-group">
-                                    <button class="btn btn-info" onClick={this.onSave.bind(this)}>Сохранить</button>
-									<button class="btn btn-info" onClick={this.props.onCancel}>Отмена</button>
-                                </div>
-                            </div>
-                        </div>
+						<div class="btn-block">
+							<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
+							<button class="btn btn--blue" onClick={this.props.onCancel}>Отмена</button>
+						</div>
                     </div>
-                </section>
+                </div>
             );
 		}
 
 		return (
 			<section class="panel">
-				<header class="panel-heading">
+				<header class="panel__header">
 					{this.props.header}
 				</header>
-				<div class="panel-body">
+				<div class="panel__body">
 
 					<Add model={this.profileModel} />
 
-					<div class="row">
-						<div class="col-xs-7">
-                            <div class="form-group">
-                                <div class="checkbox">
-                                    <label style={{color: this.state.style}}>
-                                        <input type="checkbox" onChange={this.check.bind(this)}/> Я согласен с условиями *
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+					<div class="checkbox">
+						<label style={{color: this.state.style}}>
+							<input type="checkbox" onChange={this.check.bind(this)}/> Я согласен с условиями *
+						</label>
 					</div>
 
 					<Bill model={this.billModel} score={this.props.score}/>
 
-					<div class="row">
-						<div class="col-xs-12">
-                            <div class="form-group">
-                                <button class="btn btn-info" onClick={this.onSave.bind(this)}>Сохранить</button>
-                            </div>
-                        </div>
-					</div>
+					<div className="clearfix"></div>
+
+					<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
 				</div>
 			</section>
 		);

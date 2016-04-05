@@ -52,7 +52,7 @@ gulp.task('browser-sync', function () {
 
 gulp.task('watch', function () {
 	gulp.watch(['./app/js/**/*.js'], ['webpack']);
-	gulp.watch(['./app/styles**/*.styl'], ['styles']);
+	gulp.watch(['./app/styles/**/*.styl'], ['styles']);
 });
 
 

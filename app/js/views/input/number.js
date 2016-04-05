@@ -37,14 +37,14 @@ export default class Text extends React.Component {
         };
 
         return (
-            <div>
-                <div class="input-group m-b-10">
+            <div class="input-group">
+                <div>
                     <span class="input-group-addon">
                         <i class={'fa fa-' + this.props.model.get('attr')}></i>
                     </span>
-                    <input class="form-control" type="number" valueLink={valueLink} min={this.props.min}/>
+                    <input class="number" type="number" valueLink={valueLink} min={this.props.min}/>
                 </div>
-                <small class="help-block validMessage" data-field="username" style={{display: this.valid, color: 'red'}}>Указано не верное занчение</small>
+                <small class="validMessage" data-field="username" style={{display: this.valid, color: 'red'}}>Указано не верное занчение</small>
             </div>
         );
     }
