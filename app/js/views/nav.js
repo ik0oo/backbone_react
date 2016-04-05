@@ -5,9 +5,8 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 
 //files
-import Add from './add';
+import Add from './create/add';
 import Profile from '../models/profile';
-//import Valute from './valutes';
 
 export default class Nav extends React.Component {
     constructor () {
@@ -28,8 +27,9 @@ export default class Nav extends React.Component {
     }
 
     render () {
+        console.log(this);
         const model = this.props.model;
-        const tables = {
+        const rows = {
             rub: [],
             usd: [],
             eur: []
@@ -39,9 +39,9 @@ export default class Nav extends React.Component {
             _.each(this.props.bills.models, model => {
                 _.each(model.attributes, (attr, i) => {
                     if (attr > 0) {
-                        tables[i].push(
+                        rows[i].push(
                             <tr key={model.cid + i}>
-                                <td>{attr + ' ' + i}</td>
+                                <td>{attr}</td>
                                 <td>
                                     <span onClick={this.props.onRemoveBill.bind(this, model, i)}>x</span>
                                 </td>
@@ -60,21 +60,21 @@ export default class Nav extends React.Component {
                 <table class="table table-condensed">
                     <tbody>
                         <tr>rub</tr>
-                        {tables.rub}
+                        {rows.rub}
                     </tbody>
                 </table>
 
                 <table class="table table-condensed">
                     <tbody>
                     <tr>usd</tr>
-                    {tables.usd}
+                    {rows.usd}
                     </tbody>
                 </table>
 
                 <table class="table table-condensed">
                     <tbody>
                     <tr>eur</tr>
-                    {tables.eur}
+                    {rows.eur}
                     </tbody>
                 </table>
 

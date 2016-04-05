@@ -7,11 +7,11 @@ import $ from 'jquery';
 import _ from 'underscore';
 import Backbone from 'backbone';
 
-//views
-import Main from './views/main';
-import HeaderItem from './views/header-item';
+//header
+import HeaderItem from './views/header/header-item';
+import Header from './views/header/header';
+
 import ProfileView from './views/profile';
-import Header from './views/header';
 
 //models
 import Profile from './models/profile';
@@ -21,30 +21,59 @@ import BillModel from './models/bill';
 import Profiles from './collections/profiles';
 
 //routes
-import Create from './views/create'
+import Create from './views/create/create'
 import Nav from './views/nav';
-import Add from './views/add';
-import Bill from './views/bill';
+import Add from './views/create/add';
+import Bill from './views/create/bill';
 
 
 class App extends React.Component {
     constructor (options) {
         super(options);
 
+        const storageData = this.localStorageRestoreData(options);
+
         this.state = {
             routeView: null,
-            collection: new Profiles
+            collection: new Profiles(storageData.collection)
         };
 
-        window.collection = this.state.collection;
+        this.base = storageData.base;
 
-        this.base = {
+        this.headerModel = new Backbone.Model().set(this.base)
+    }
+
+    localStorageRestoreData (options) {
+        // возвращает массив данных из localStorage
+        if (!localStorage) return false;
+
+        let base = {
             rub: options.rub,
             usd: options.usd,
             eur: options.eur
         };
 
-        this.headerModel = new Backbone.Model().set(this.base)
+        let data = JSON.parse(localStorage.getItem('Profiles'));
+
+        const collection =  _.map(data, item => {
+            if (item.bills) {
+                item.bills = new Backbone.Collection(item.bills);
+
+                _.each(item.bills.models, m => {
+                    _.each(m.attributes, (attr, i) => {
+                        base[i] -= Number(attr);
+                    });
+                }) ;
+
+            }
+
+            return new Profile().set(item);
+        });
+
+        return {
+            collection: collection.length ? collection : false,
+            base: base
+        }
     }
 
     componentDidUpdate () {
@@ -53,8 +82,23 @@ class App extends React.Component {
         });
     }
 
+
+    componentWillUnmount () {
+        if (localStorage) {
+            this.state.collection.off(null, null, this);
+        }
+    }
+
     componentDidMount () {
         const self = this;
+
+        // запись данных в localStorage
+        if (localStorage) {
+            this.state.collection.on('change add remove', () => {
+                let json = JSON.stringify(self.state.collection.toJSON());
+                localStorage.setItem('Profiles', json);
+            }, this);
+        }
 
         // создаем роутинг при создании компонента
         class Router extends Backbone.Router {
@@ -138,6 +182,7 @@ class App extends React.Component {
         !model.get('bills') && model.set('bills', new Backbone.Collection);
 
         model.get('bills').add(billModel);
+        this.state.collection.trigger('change'); // для записи в localStorage
         this.toProfile(model);
     }
 
@@ -146,12 +191,13 @@ class App extends React.Component {
         this.headerModel.set(valute, newValue);
 
         updateModel.set(valute, 0, {silent: true});
+        this.state.collection.trigger('change'); // для записи в localStorage
         this.setState({collection: this.state.collection});
     }
 
     deleteProfile (model) {
         let bills = model.get('bills');
-        if (bills.length) {
+        if (bills && bills.length) {
             _.each(bills.models, m => {
                 _.each(m.attributes, (attr, i) => {
                     let hm = Number(this.headerModel.get(i)) + Number(attr);
@@ -214,7 +260,12 @@ class App extends React.Component {
     render () {
         // добавляем профили в сайдбар
         const profiles = _.map(this.state.collection.models, model => {
-            return <ProfileView model={model} key= {model.cid} />;
+            let active;
+            if (this.router) {
+                active = model.cid === 'c' + this.router.current ? true : false;
+            }
+
+            return <ProfileView model={model} active={active} key={model.cid} />;
         });
 
         // routing
