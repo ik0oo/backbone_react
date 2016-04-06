@@ -149,10 +149,6 @@ class App extends React.Component {
         Backbone.history.start();
     }
 
-    //selectProfile (model) {
-    //    this.toProfile(model);
-    //}
-
     addProfile (model, isChecked) {
         if (isChecked && model.isValid()) {
             let bills = model.get('bills');
@@ -160,7 +156,7 @@ class App extends React.Component {
                 let billsValid;
                 _.each(bills.models, m => {
                     billsValid = _.every(m.attributes, (attr, i) => {
-                        return this.base[i] >= attr;
+                        return this.base[i] >= attr && attr >= 0;
                     });
                 });
 
@@ -170,7 +166,7 @@ class App extends React.Component {
             let newModel = this.state.collection.add(model);
 
             this.setState({collection: this.state.collection});
-            this.toProfile(newModel);
+            this.toProfile(newModel, true);
 
         } else {
             return false;
@@ -179,15 +175,26 @@ class App extends React.Component {
 
     saveProfile (model, profileModel) {
         model.set(profileModel.toJSON(), {silent: true});
-        this.toProfile(model);
+        this.toProfile(model, false);
     }
 
     saveBill (model, billModel) {
-        !model.get('bills') && model.set('bills', new Backbone.Collection);
+        let bills = model.get('bills') || model.set('bills', new Backbone.Collection);
 
-        model.get('bills').add(billModel);
+        if (bills && bills.length) {
+            let billsValid;
+            _.each(bills.models, m => {
+                billsValid = _.every(m.attributes, (attr, i) => {
+                    return this.base[i] >= attr && attr >=0;
+                });
+            });
+
+            if (!billsValid) return false;
+        }
+
+        bills.add(billModel);
         this.state.collection.trigger('change'); // для записи в localStorage
-        this.toProfile(model);
+        this.toProfile(model, true);
     }
 
     removeBill (updateModel, valute) {
@@ -217,6 +224,16 @@ class App extends React.Component {
         this.router.navigate('/', {trigger: true, replace: false});
     }
 
+    cancelSend (model, billModel) {
+        _.each(this.base, (attr, i) => {
+            this.headerModel.set(i, this.base[i], {silent: true});
+        });
+        this.headerModel.trigger('change');
+
+        billModel.clear();
+        this.toProfile(model, true);
+    }
+
     sendBill (model) {
         this.router.navigate('#profile/' + model.cid + '/send', {trigger: true, replace: false});
     }
@@ -225,8 +242,14 @@ class App extends React.Component {
         this.router.navigate('#profile/' + model.cid + '/edit', {trigger: true, replace: false});
     }
 
-    toProfile (model) {
-        this.router.navigate('#profile/' + model.cid, {trigger: true, replace: false});
+    toProfile (model, forceChange) {
+        if (!forceChange) {
+            if (this.state.routeView === 'send') return false;
+            if (this.state.routeView === 'add') return false;
+        }
+
+        if (model.cid) return this.router.navigate('#profile/' + model.cid, {trigger: true, replace: false});
+        return this.router.navigate('/', {trigger: true, replace: false});
     }
 
     updateBill (model, billModel) {
@@ -249,15 +272,11 @@ class App extends React.Component {
                     this.headerModel.set(i, sum);
                 }
             });
-
-        } else {
-            _.each(this.state.collection.models, model => {
-                console.log(model);
-            });
         }
     }
 
     showCreateProfileView () {
+        if (this.state.routeView === 'send') return false;
         this.router.navigate('#add', {trigger: true, replace: false});
     }
 
@@ -269,7 +288,7 @@ class App extends React.Component {
                 active = model.cid === 'c' + this.router.current ? true : false;
             }
 
-            return <ProfileView model={model} active={active} onClick={this.toProfile.bind(this, model)} key={model.cid} />;
+            return <ProfileView model={model} active={active} onClick={this.toProfile.bind(this, model, false)} key={model.cid} />;
         });
 
         // routing
@@ -283,6 +302,7 @@ class App extends React.Component {
                     onSave={this.addProfile.bind(this, model)}
                     onUpdateBill={this.updateBill.bind(this, model)}
                     onUpdateProfile={this.updateProfile.bind(this, model)}
+                    onCancel={this.cancelSend.bind(this, {cid: false})}
                     score={this.base}
                 />
             ;
@@ -297,7 +317,7 @@ class App extends React.Component {
                     model={model.toJSON()}
                     header={'Редактировать пользователя'}
                     onSave={this.saveProfile.bind(this, model)}
-                    onCancel={this.toProfile.bind(this, model)}
+                    onCancel={this.toProfile.bind(this, model, false)}
                 />
             ;
         }
@@ -310,7 +330,7 @@ class App extends React.Component {
                     type={'send'}
                     header={'Отправить перевод'}
                     onSave={this.saveBill.bind(this, model)}
-                    onCancel={this.toProfile.bind(this, model)}
+                    onCancel={this.cancelSend.bind(this, model)}
                     onUpdateBill={this.updateBill.bind(this, model)}
                     score={this.base}
                 />

@@ -60,6 +60,10 @@ export default class Create extends React.Component {
 
 	}
 
+	onCancel () {
+		this.props.onCancel(this.billModel);
+	}
+
 	onSave () {
 		if (this.props.type !== 'edit') {
 			this.billModel.trigger('validate');
@@ -115,7 +119,7 @@ export default class Create extends React.Component {
 
 						<div class="btn-block">
 							<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
-							<button class="btn btn--blue" onClick={this.props.onCancel}>Отмена</button>
+							<button class="btn btn--blue" onClick={this.onCancel.bind(this)}>Отмена</button>
 						</div>
                     </div>
                 </div>
@@ -141,7 +145,11 @@ export default class Create extends React.Component {
 
 					<div className="clearfix"></div>
 
-					<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
+					<div className="btn-block">
+						<button class="btn btn--blue" onClick={this.onSave.bind(this)}>Сохранить</button>
+						<button class="btn btn--blue" onClick={this.onCancel.bind(this)}>Отмена</button>
+					</div>
+
 				</div>
 			</section>
 		);

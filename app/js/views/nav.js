@@ -27,7 +27,6 @@ export default class Nav extends React.Component {
     }
 
     render () {
-        console.log(this);
         const model = this.props.model;
         const rows = {
             rub: [],
